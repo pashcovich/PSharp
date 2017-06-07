@@ -38,11 +38,6 @@ namespace Microsoft.PSharp
         protected internal MachineId Id { get; private set; }
 
         /// <summary>
-        /// The operation id.
-        /// </summary>
-        internal int OperationId { get; private set; }
-
-        /// <summary>
         /// Checks if the machine is executing an OnExit method.
         /// </summary>
         internal bool IsInsideOnExit;
@@ -68,7 +63,6 @@ namespace Microsoft.PSharp
         /// </summary>
         public AbstractMachine()
         {
-            this.OperationId = 0;
             this.IsInsideOnExit = false;
             this.CurrentActionCalledRGP = false;
         }
@@ -128,25 +122,16 @@ namespace Microsoft.PSharp
             this.Runtime = mid.Runtime;
         }
 
-        /// <summary>
-        /// Sets the operation id of this machine.
-        /// </summary>
-        /// <param name="opid">OperationId</param>
-        internal void SetOperationId(int opid)
-        {
-            this.OperationId = opid;
-        }
-
-        /// <summary>
-        /// Returns true if the given operation id is pending
-        /// execution by the machine.
-        /// </summary>
-        /// <param name="opid">OperationId</param>
-        /// <returns>Boolean</returns>
-        internal virtual bool IsOperationPending(int opid)
-        {
-            return false;
-        }
+        ///// <summary>
+        ///// Returns true if the given operation id is pending
+        ///// execution by the machine.
+        ///// </summary>
+        ///// <param name="opid">OperationId</param>
+        ///// <returns>Boolean</returns>
+        //internal virtual bool IsOperationPending(int opid)
+        //{
+        //    return false;
+        //}
 
 
         /// <summary>

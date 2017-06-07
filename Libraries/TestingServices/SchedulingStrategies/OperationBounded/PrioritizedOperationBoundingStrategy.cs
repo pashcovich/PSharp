@@ -156,7 +156,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         /// <returns>OperationId</returns>
         protected override int GetNextOperation(List<MachineInfo> choices, MachineInfo current)
         {
-            var operationIds = choices.Select(val => val.Machine.OperationId).Distinct();
+            var operationIds = choices.Select(val => val.OperationId).Distinct();
             if (this.PriorityChangePoints.Contains(this.ExploredSteps))
             {
                 if (operationIds.Count() == 1)
@@ -189,7 +189,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
             var prioritizedOperation = -1;
             foreach (var op in base.Operations)
             {
-                if (choices.Any(m => m.Machine.OperationId == op))
+                if (choices.Any(m => m.OperationId == op))
                 {
                     prioritizedOperation = op;
                     break;

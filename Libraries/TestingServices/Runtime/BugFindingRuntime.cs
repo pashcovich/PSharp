@@ -91,11 +91,6 @@ namespace Microsoft.PSharp.TestingServices
         /// Only used for dynamic data race detection.
         /// </summary>
         internal IDictionary<MachineId, MachineActionTrace> MachineActionTraceMap;
-
-        /// <summary>
-        /// The root task id.
-        /// </summary>
-        internal int? RootTaskId;
         
         /// <summary>
         /// Monotonically increasing machine id counter.
@@ -135,8 +130,6 @@ namespace Microsoft.PSharp.TestingServices
             this.MachineMap = new ConcurrentDictionary<ulong, Machine>();
             this.TaskMap = new ConcurrentDictionary<int, Machine>();
             this.MachineActionTraceMap = new ConcurrentDictionary<MachineId, MachineActionTrace>();
-
-            this.RootTaskId = Task.CurrentId;
             this.OperationIdCounter = 0;
         }
 
@@ -399,7 +392,8 @@ namespace Microsoft.PSharp.TestingServices
         /// <returns>MachineId</returns>
         internal override MachineId CreateMachine(Type type, string friendlyName, Event e, Machine creator)
         {
-            this.Scheduler.Schedule();
+            var machineInfo = this.Scheduler.CreateMachineInfo();
+            this.Scheduler.Schedule(OperationType.Create, machineInfo.Id);
 
             creator?.AssertNoPendingRGP("CreateMachine");
 
@@ -1420,7 +1414,7 @@ namespace Microsoft.PSharp.TestingServices
             }
             else if (sender != null)
             {
-                eventInfo.SetOperationId(sender.OperationId);
+                eventInfo.SetOperationId(this.Scheduler.ScheduledMachine.OperationId);
             }
             else
             {

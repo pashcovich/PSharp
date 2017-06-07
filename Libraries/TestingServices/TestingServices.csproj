@@ -65,6 +65,7 @@
     <Compile Include="Runtime\BugFindingRuntime.cs" />
     <Compile Include="Runtime\TestHarnessMachine.cs" />
     <Compile Include="Scheduling\BugFindingScheduler.cs" />
+    <Compile Include="Scheduling\ISchedulable.cs" />
     <Compile Include="Scheduling\MachineInfo.cs" />
     <Compile Include="SchedulingStrategies\DelayBounded\DelayBoundingStrategy.cs" />
     <Compile Include="SchedulingStrategies\DelayBounded\ExhaustiveDelayBoundingStrategy.cs" />

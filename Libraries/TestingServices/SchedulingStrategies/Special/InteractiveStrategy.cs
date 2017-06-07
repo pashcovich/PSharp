@@ -71,13 +71,13 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         }
 
         /// <summary>
-        /// Returns the next machine to schedule.
+        /// Returns the next <see cref="ISchedulable"/> to schedule.
         /// </summary>
         /// <param name="next">Next</param>
         /// <param name="choices">Choices</param>
         /// <param name="current">Curent</param>
         /// <returns>Boolean</returns>
-        public bool TryGetNext(out MachineInfo next, IEnumerable<MachineInfo> choices, MachineInfo current)
+        public virtual bool TryGetNext(out ISchedulable next, IEnumerable<ISchedulable> choices, ISchedulable current)
         {
             next = null;
 
@@ -128,7 +128,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
                     if (this.Configuration.BoundOperations)
                     {
                         this.Logger.WriteLine($">> [{idx}] '{m.Machine.Id}' with " +
-                            $"operation id '{m.Machine.OperationId}'");
+                            $"operation id '{m.OperationId}'");
                     }
                     else
                     {
@@ -181,7 +181,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
 
                         if (this.Configuration.BoundOperations)
                         {
-                            this.PrioritizedOperationId = next.Machine.OperationId;
+                            this.PrioritizedOperationId = next.OperationId;
                         }
                     }
                     catch (FormatException)
@@ -441,11 +441,11 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         private List<MachineInfo> GetPrioritizedMachines(List<MachineInfo> choices, MachineInfo current)
         {
             choices = choices.OrderBy(mi => mi.Machine.Id.Value).ToList();
-            choices = choices.OrderBy(mi => mi.Machine.OperationId).ToList();
+            choices = choices.OrderBy(mi => mi.OperationId).ToList();
 
             MachineInfo priorityMachine = current;
             var prioritizedMachines = new List<MachineInfo>();
-            if (current.Machine.OperationId == this.PrioritizedOperationId)
+            if (current.OperationId == this.PrioritizedOperationId)
             {
                 var currentMachineIdx = choices.IndexOf(current);
                 prioritizedMachines = choices.GetRange(currentMachineIdx, choices.Count - currentMachineIdx);
@@ -456,7 +456,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
             }
             else
             {
-                priorityMachine = choices.First(mi => mi.Machine.OperationId == this.PrioritizedOperationId);
+                priorityMachine = choices.First(mi => mi.OperationId == this.PrioritizedOperationId);
                 var priorityMachineIdx = choices.IndexOf(priorityMachine);
                 prioritizedMachines = choices.GetRange(priorityMachineIdx, choices.Count - priorityMachineIdx);
                 if (priorityMachineIdx != 0)

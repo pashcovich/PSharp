@@ -12,12 +12,14 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System;
+
 namespace Microsoft.PSharp.TestingServices.Scheduling
 {
     /// <summary>
     /// Class implementing machine related information for scheduling purposes.
     /// </summary>
-    public sealed class MachineInfo
+    public sealed class MachineInfo : ISchedulable
     {
         #region fields
 
@@ -26,15 +28,25 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         /// </summary>
         internal AbstractMachine Machine;
 
+        #endregion
+
+        #region properties
+
         /// <summary>
-        /// Unique id of the machine.
+        /// Unique id of the machine info. This can be
+        /// different than the unique machine id.
         /// </summary>
-        public readonly int Id;
+        public int Id { get; }
 
         /// <summary>
         /// Task id of the machine.
         /// </summary>
         internal int TaskId { get; set; }
+
+        /// <summary>
+        /// The operation id of the machine.
+        /// </summary>
+        public int OperationId { get; private set; }
 
         /// <summary>
         /// Is machine enabled.
@@ -88,6 +100,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         internal MachineInfo(int id, AbstractMachine machine)
         {
             this.Id = id;
+            this.OperationId = 0;
             this.Machine = machine;
             this.IsEnabled = true;
             this.IsWaitingToReceive = false;
@@ -97,6 +110,19 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
             this.NextOperationType = OperationType.Start;
             this.NextTargetId = id;
             this.OperationCount = 0;
+        }
+
+        #endregion
+
+        #region methods
+
+        /// <summary>
+        /// Sets the operation id of this machine.
+        /// </summary>
+        /// <param name="opid">OperationId</param>
+        internal void SetOperationId(int opid)
+        {
+            this.OperationId = opid;
         }
 
         #endregion

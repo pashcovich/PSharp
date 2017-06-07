@@ -17,18 +17,18 @@ using System.Collections.Generic;
 namespace Microsoft.PSharp.TestingServices.Scheduling
 {
     /// <summary>
-    /// Interface of a generic machine scheduling strategy.
+    /// Interface of a generic scheduling strategy.
     /// </summary>
     public interface ISchedulingStrategy
     {
         /// <summary>
-        /// Returns the next machine to schedule.
+        /// Returns the next <see cref="ISchedulable"/> to schedule.
         /// </summary>
         /// <param name="next">Next</param>
         /// <param name="choices">Choices</param>
         /// <param name="current">Curent</param>
         /// <returns>Boolean</returns>
-        bool TryGetNext(out MachineInfo next, IEnumerable<MachineInfo> choices, MachineInfo current);
+        bool TryGetNext(out ISchedulable next, IEnumerable<ISchedulable> choices, ISchedulable current);
 
         /// <summary>
         /// Returns the next boolean choice.

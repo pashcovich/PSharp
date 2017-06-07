@@ -1472,24 +1472,24 @@ namespace Microsoft.PSharp
             }
         }
 
-        /// <summary>
-        /// Returns true if the specified operation id is pending
-        /// execution by the machine.
-        /// </summary>
-        /// <param name="opid">OperationId</param>
-        /// <returns>Boolean</returns>
-        internal override bool IsOperationPending(int opid)
-        {
-            foreach (var e in this.Inbox)
-            {
-                if (e.OperationId == opid)
-                {
-                    return true;
-                }
-            }
+        ///// <summary>
+        ///// Returns true if the specified operation id is pending
+        ///// execution by the machine.
+        ///// </summary>
+        ///// <param name="opid">OperationId</param>
+        ///// <returns>Boolean</returns>
+        //internal override bool IsOperationPending(int opid)
+        //{
+        //    foreach (var e in this.Inbox)
+        //    {
+        //        if (e.OperationId == opid)
+        //        {
+        //            return true;
+        //        }
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         /// <summary>
         /// Returns the names of the events that the machine

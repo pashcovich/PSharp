@@ -507,7 +507,7 @@ namespace Microsoft.PSharp.TestingServices.Liveness
         #region scheduling strategy methods
 
         /// <summary>
-        /// Returns the next machine to schedule.
+        /// Returns the next <see cref="ISchedulable"/> to schedule.
         /// </summary>
         /// <param name="next">Next</param>
         /// <param name="choices">Choices</param>

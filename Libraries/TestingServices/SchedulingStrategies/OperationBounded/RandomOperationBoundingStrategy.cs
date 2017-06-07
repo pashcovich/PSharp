@@ -116,7 +116,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         {
             int idx = this.Random.Next(choices.Count);
             var machineWithNextOperation = choices[idx];
-            return machineWithNextOperation.Machine.OperationId;
+            return machineWithNextOperation.OperationId;
 
             //var enabledOperations = base.Operations.Where(val => choices.Any(
             //    m => m.Machine.OperationId == val)).ToList();
@@ -132,7 +132,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         /// <returns>MachineInfo</returns>
         protected override MachineInfo GetNextMachineWithOperation(List<MachineInfo> choices, int operationId)
         {
-            var availableMachines = choices.Where(mi => mi.Machine.OperationId == operationId)
+            var availableMachines = choices.Where(mi => mi.OperationId == operationId)
                 .OrderBy(mi => mi.Machine.Id.Value).ToList();
 
             MachineInfo next = null;
@@ -169,7 +169,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         private int GetRandomEnabledOperationId(IEnumerable<MachineInfo> choices)
         {
             var enabledOperations = base.Operations.Where(val => choices.Any(
-                m => m.Machine.OperationId == val)).ToList();
+                m => m.OperationId == val)).ToList();
             int opIdx = base.Random.Next(enabledOperations.Count);
             var prioritizedOperation = enabledOperations[opIdx];
             return prioritizedOperation;

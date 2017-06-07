@@ -77,18 +77,18 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         }
 
         /// <summary>
-        /// Returns the next machine to schedule.
+        /// Returns the next <see cref="ISchedulable"/> to schedule.
         /// </summary>
         /// <param name="next">Next</param>
         /// <param name="choices">Choices</param>
         /// <param name="current">Curent</param>
         /// <returns>Boolean</returns>
-        public bool TryGetNext(out MachineInfo next, IEnumerable<MachineInfo> choices, MachineInfo current)
+        public virtual bool TryGetNext(out ISchedulable next, IEnumerable<ISchedulable> choices, ISchedulable current)
         {
             if (this.HasCurrentOperationCompleted(choices, current))
             {
-                this.Operations.Remove(current.Machine.OperationId);
-                Debug.WriteLine("<OperationDebug> Removes operation '{0}'.", current.Machine.OperationId);
+                this.Operations.Remove(current.OperationId);
+                Debug.WriteLine("<OperationDebug> Removes operation '{0}'.", current.OperationId);
             }
 
             var availableMachines = choices.Where(mi => mi.IsEnabled).ToList();
@@ -116,15 +116,15 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
                 }
             }
 
-            if (this.Configuration.DynamicEventQueuePrioritization)
-            {
-                var machineChoices = availableMachines.Where(mi => mi.Machine is Machine).
-                    Select(m => m.Machine as Machine);
-                foreach (var choice in machineChoices)
-                {
-                    choice.SetQueueOperationPriority(nextOperation);
-                }
-            }
+            //if (this.Configuration.DynamicEventQueuePrioritization)
+            //{
+            //    var machineChoices = availableMachines.Where(mi => mi.Machine is Machine).
+            //        Select(m => m.Machine as Machine);
+            //    foreach (var choice in machineChoices)
+            //    {
+            //        choice.SetQueueOperationPriority(nextOperation);
+            //    }
+            //}
 
             next = this.GetNextMachineWithOperation(availableMachines, nextOperation);
 
@@ -231,18 +231,18 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         /// <param name="choices">Choices</param>
         /// <param name="current">Curent</param>
         /// <returns>OperationId</returns>
-        protected abstract int GetNextOperation(List<MachineInfo> choices, MachineInfo current);
+        protected abstract int GetNextOperation(List<ISchedulable> choices, ISchedulable current);
 
         /// <summary>
         /// Returns the next machine to schedule that has the given operation.
         /// </summary>
         /// <param name="choices">Choices</param>
         /// <param name="operationId">OperationId</param>
-        /// <returns>MachineInfo</returns>
-        protected virtual MachineInfo GetNextMachineWithOperation(List<MachineInfo> choices, int operationId)
+        /// <returns>ISchedulable</returns>
+        protected virtual ISchedulable GetNextMachineWithOperation(List<ISchedulable> choices, int operationId)
         {
             var availableMachines = choices.Where(
-                mi => mi.Machine.OperationId == operationId).ToList();
+                mi => mi.OperationId == operationId).ToList();
             int idx = this.Random.Next(availableMachines.Count);
             return availableMachines[idx];
         }
@@ -256,14 +256,14 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         /// </summary>
         /// <param name="choices">Choices</param>
         /// <param name="current">Curent</param>
-        private void TryRegisterNewOperations(IEnumerable<MachineInfo> choices, MachineInfo current)
+        private void TryRegisterNewOperations(IEnumerable<ISchedulable> choices, ISchedulable current)
         {
             if (this.Operations.Count == 0)
             {
-                this.Operations.Add(current.Machine.OperationId);
+                this.Operations.Add(current.OperationId);
             }
 
-            var operationIds = choices.Select(mi => mi.Machine.OperationId).Distinct();
+            var operationIds = choices.Select(mi => mi.OperationId).Distinct();
             foreach (var id in operationIds.Where(id => !this.Operations.Contains(id)))
             {
                 var opIndex = this.Random.Next(this.Operations.Count) + 1;
@@ -276,18 +276,18 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         /// Returns true if the current operation has completed.
         /// </summary>
         /// <param name="choices">List of machine infos</param>
-        /// <param name="current">MachineInfo</param>
+        /// <param name="current">ISchedulable</param>
         /// <returns>Boolean</returns>
-        private bool HasCurrentOperationCompleted(IEnumerable<MachineInfo> choices, MachineInfo current)
+        private bool HasCurrentOperationCompleted(IEnumerable<ISchedulable> choices, ISchedulable current)
         {
-            foreach (var choice in choices.Where(mi => !mi.IsCompleted))
-            {
-                if (choice.Machine.OperationId == current.Machine.OperationId ||
-                    choice.Machine.IsOperationPending(current.Machine.OperationId))
-                {
-                    return false;
-                }
-            }
+            //foreach (var choice in choices.Where(mi => !mi.IsCompleted))
+            //{
+            //    if (choice.OperationId == current.OperationId ||
+            //        choice.Machine.IsOperationPending(current.OperationId))
+            //    {
+            //        return false;
+            //    }
+            //}
 
             return true;
         }

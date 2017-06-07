@@ -14,6 +14,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 using Microsoft.PSharp.IO;
@@ -108,7 +109,7 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         /// <summary>
         /// Schedules the next machine to execute.
         /// </summary>
-        internal void Schedule()
+        internal void Schedule(OperationType nextOperationType, int target)
         {
             // If the scheduler is not running, then return.
             if (!this.IsSchedulerRunning)
@@ -305,6 +306,39 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
         }
 
         /// <summary>
+        /// Stops the scheduler.
+        /// </summary>
+        internal void Stop()
+        {
+            this.IsSchedulerRunning = false;
+            this.KillRemainingMachines();
+
+            // Check if the completion source is completed. If not synchronize on
+            // it (as it can only be set once) and set its result.
+            if (!this.CompletionSource.Task.IsCompleted)
+            {
+                lock (this.CompletionSource)
+                {
+                    if (!this.CompletionSource.Task.IsCompleted)
+                    {
+                        this.CompletionSource.SetResult(true);
+                    }
+                }
+            }
+
+            throw new ExecutionCanceledException();
+        }
+
+        /// <summary>
+        /// Blocks until the scheduler terminates.
+        /// </summary>
+        internal void Wait() => this.CompletionSource.Task.Wait();
+
+        #endregion
+
+        #region notifications
+
+        /// <summary>
         /// Notify that an event handler has been created for the given machine.
         /// </summary>
         /// <param name="machine">Machine</param>
@@ -460,51 +494,19 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
             }
         }
 
-        /// <summary>
-        /// Stops the scheduler.
-        /// </summary>
-        internal void Stop()
-        {
-            this.IsSchedulerRunning = false;
-            this.KillRemainingMachines();
-
-            // Check if the completion source is completed. If not synchronize on
-            // it (as it can only be set once) and set its result.
-            if (!this.CompletionSource.Task.IsCompleted)
-            {
-                lock (this.CompletionSource)
-                {
-                    if (!this.CompletionSource.Task.IsCompleted)
-                    {
-                        this.CompletionSource.SetResult(true);
-                    }
-                }
-            }
-
-            throw new ExecutionCanceledException();
-        }
-
-        /// <summary>
-        /// Blocks until the scheduler terminates.
-        /// </summary>
-        internal void Wait() => this.CompletionSource.Task.Wait();
-
-        /// <summary>
-        /// Switches the scheduler to the specified scheduling strategy,
-        /// and returns the previously installed strategy.
-        /// </summary>
-        /// <param name="strategy">ISchedulingStrategy</param>
-        /// <returns>ISchedulingStrategy</returns>
-        internal ISchedulingStrategy SwitchSchedulingStrategy(ISchedulingStrategy strategy)
-        {
-            ISchedulingStrategy previous = this.Strategy;
-            this.Strategy = strategy;
-            return previous;
-        }
-
         #endregion
 
         #region utilities
+
+        /// <summary>
+        /// Creates a new machine info.
+        /// </summary>
+        /// <returns>MachineInfo</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal MachineInfo CreateMachineInfo()
+        {
+           return  new MachineInfo(this.MachineInfos.Count);
+        }
 
         /// <summary>
         /// Returns the enabled machines.
@@ -579,6 +581,19 @@ namespace Microsoft.PSharp.TestingServices.Scheduling
             }
 
             return report;
+        }
+
+        /// <summary>
+        /// Switches the scheduler to the specified scheduling strategy,
+        /// and returns the previously installed strategy.
+        /// </summary>
+        /// <param name="strategy">ISchedulingStrategy</param>
+        /// <returns>ISchedulingStrategy</returns>
+        internal ISchedulingStrategy SwitchSchedulingStrategy(ISchedulingStrategy strategy)
+        {
+            ISchedulingStrategy previous = this.Strategy;
+            this.Strategy = strategy;
+            return previous;
         }
 
         #endregion
