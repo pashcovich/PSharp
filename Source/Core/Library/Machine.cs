@@ -179,8 +179,7 @@ namespace Microsoft.PSharp
         {
             get
             {
-                return $"{this.CurrentState.DeclaringType}." +
-                    $"{StateGroup.GetQualifiedStateName(this.CurrentState)}";
+                return this.StateStack.Peek().Name;
             }
         }
 

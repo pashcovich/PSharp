@@ -24,6 +24,11 @@ namespace Microsoft.PSharp
     public abstract class MachineState
     {
         #region fields
+
+        /// <summary>
+        /// The name of the state.
+        /// </summary>
+        internal string Name { get; private set; }
         
         /// <summary>
         /// The entry action of the state.
@@ -79,6 +84,10 @@ namespace Microsoft.PSharp
         /// </summary>
         internal void InitializeState()
         {
+            Type type = this.GetType();
+
+            this.Name = $"{type.DeclaringType}.{StateGroup.GetQualifiedStateName(type)}";
+
             this.IsStart = false;
 
             this.GotoTransitions = new Dictionary<Type, GotoStateTransition>();
@@ -88,8 +97,8 @@ namespace Microsoft.PSharp
             this.IgnoredEvents = new HashSet<Type>();
             this.DeferredEvents = new HashSet<Type>();
 
-            var entryAttribute = this.GetType().GetCustomAttribute(typeof(OnEntry), false) as OnEntry;
-            var exitAttribute = this.GetType().GetCustomAttribute(typeof(OnExit), false) as OnExit;
+            var entryAttribute = type.GetCustomAttribute(typeof(OnEntry), false) as OnEntry;
+            var exitAttribute = type.GetCustomAttribute(typeof(OnExit), false) as OnExit;
 
             if (entryAttribute != null)
             {
@@ -101,11 +110,11 @@ namespace Microsoft.PSharp
                 this.ExitAction = exitAttribute.Action;
             }
 
-            var gotoAttributes = this.GetType().GetCustomAttributes(typeof(OnEventGotoState), false)
+            var gotoAttributes = type.GetCustomAttributes(typeof(OnEventGotoState), false)
                 as OnEventGotoState[];
-            var pushAttributes = this.GetType().GetCustomAttributes(typeof(OnEventPushState), false)
+            var pushAttributes = type.GetCustomAttributes(typeof(OnEventPushState), false)
                 as OnEventPushState[];
-            var doAttributes = this.GetType().GetCustomAttributes(typeof(OnEventDoAction), false)
+            var doAttributes = type.GetCustomAttributes(typeof(OnEventDoAction), false)
                 as OnEventDoAction[];
 
             foreach (var attr in gotoAttributes)
@@ -130,8 +139,8 @@ namespace Microsoft.PSharp
                 this.ActionBindings.Add(attr.Event, new ActionBinding(attr.Action));
             }
 
-            var ignoreEventsAttribute = this.GetType().GetCustomAttribute(typeof(IgnoreEvents), false) as IgnoreEvents;
-            var deferEventsAttribute = this.GetType().GetCustomAttribute(typeof(DeferEvents), false) as DeferEvents;
+            var ignoreEventsAttribute = type.GetCustomAttribute(typeof(IgnoreEvents), false) as IgnoreEvents;
+            var deferEventsAttribute = type.GetCustomAttribute(typeof(DeferEvents), false) as DeferEvents;
 
             if (ignoreEventsAttribute != null)
             {
@@ -143,7 +152,7 @@ namespace Microsoft.PSharp
                 this.DeferredEvents.UnionWith(deferEventsAttribute.Events);
             }
 
-            if (this.GetType().IsDefined(typeof(Start), false))
+            if (type.IsDefined(typeof(Start), false))
             {
                 this.IsStart = true;
             }

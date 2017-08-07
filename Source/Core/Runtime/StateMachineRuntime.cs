@@ -819,8 +819,7 @@ namespace Microsoft.PSharp
                 return;
             }
 
-            base.Log($"<MonitorLog> Monitor '{monitor.GetType().Name}' raised " +
-                $"event '{eventInfo.EventName}'.");
+            base.Log($"<MonitorLog> Monitor '{monitor.GetType().Name}' raised event '{eventInfo.EventName}'.");
         }
 
         /// <summary>
@@ -833,8 +832,7 @@ namespace Microsoft.PSharp
             // The machine inherits the operation group id of the dequeued event.
             machine.Info.OperationGroupId = eventInfo.OperationGroupId;
 
-            base.Log($"<DequeueLog> Machine '{machine.Id}' dequeued " +
-                $"event '{eventInfo.EventName}'.");
+            base.Log($"<DequeueLog> Machine '{machine.Id}' dequeued event '{eventInfo.EventName}'.");
         }
 
         /// <summary>
@@ -858,8 +856,7 @@ namespace Microsoft.PSharp
         /// <param name="eventInfo">EventInfo</param>
         internal override void NotifyReceivedEvent(Machine machine, EventInfo eventInfo)
         {
-            base.Log($"<ReceiveLog> Machine '{machine.Id}' received " +
-                $"event '{eventInfo.EventName}' and unblocked.");
+            base.Log($"<ReceiveLog> Machine '{machine.Id}' received event '{eventInfo.EventName}' and unblocked.");
 
             lock (machine)
             {
