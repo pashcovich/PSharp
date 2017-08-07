@@ -548,8 +548,7 @@ namespace Microsoft.PSharp
                     return;
                 }
 
-                base.Runtime.Log($"<EnqueueLog> Machine '{base.Id}' " +
-                    $"enqueued event '{eventInfo.EventName}'.");
+                base.Runtime.Log("<EnqueueLog> Machine '{0}' enqueued event '{1}'.", base.Id, eventInfo.EventName);
 
                 this.Inbox.Add(eventInfo);
 
@@ -674,8 +673,7 @@ namespace Microsoft.PSharp
         /// <returns>EventInfo</returns>
         private EventInfo GetDefaultEvent()
         {
-            base.Runtime.Log($"<DefaultLog> Machine '{base.Id}' is executing the " +
-                $"default handler in state '{this.CurrentStateName}'.");
+            base.Runtime.Log("<DefaultLog> Machine '{0}' is executing the default handler in state '{1}'.", base.Id, this.CurrentStateName);
             return new EventInfo(new Default(), new EventOriginInfo(
                 base.Id, this.GetType().Name, StateGroup.GetQualifiedStateName(this.CurrentState)));
         }
@@ -858,14 +856,12 @@ namespace Microsoft.PSharp
 
                     if (this.CurrentState == null)
                     {
-                        base.Runtime.Log($"<PopLog> Machine '{base.Id}' " +
-                            $"popped with unhandled event '{e.GetType().FullName}'.");
+                        base.Runtime.Log("<PopLog> Machine '{0}' popped with unhandled event '{1}'.", base.Id, e.GetType().FullName);
                     }
                     else
                     {
-                        base.Runtime.Log($"<PopLog> Machine '{base.Id}' popped " +
-                            $"with unhandled event '{e.GetType().FullName}' and " +
-                            $"reentered state '{this.CurrentStateName}.");
+                        base.Runtime.Log("<PopLog> Machine '{0}' popped with unhandled event '{1}' and reentered state '{2}.",
+                            base.Id, e.GetType().FullName, this.CurrentStateName);
                     }
 
                     continue;
@@ -1036,7 +1032,7 @@ namespace Microsoft.PSharp
         /// <param name="s">Type of the state</param>
         private async Task PushState(Type s)
         {
-            base.Runtime.Log($"<PushLog> Machine '{base.Id}' pushed.");
+            base.Runtime.Log("<PushLog> Machine '{0}' pushed.", base.Id);
 
             var nextState = StateMap[this.GetType()].First(val => val.GetType().Equals(s));
             this.DoStatePush(nextState);
@@ -1063,12 +1059,11 @@ namespace Microsoft.PSharp
 
             if (this.CurrentState == null)
             {
-                base.Runtime.Log($"<PopLog> Machine '{base.Id}' popped.");
+                base.Runtime.Log("<PopLog> Machine '{0}' popped.", base.Id);
             }
             else
             {
-                base.Runtime.Log($"<PopLog> Machine '{base.Id}' popped " +
-                    $"and reentered state '{this.CurrentStateName}'.");
+                base.Runtime.Log("<PopLog> Machine '{0}' popped and reentered state '{1}'.", base.Id, this.CurrentStateName);
             }
 
             // Watch out for an extra pop.
@@ -1186,8 +1181,7 @@ namespace Microsoft.PSharp
                                val.Predicate(this.Inbox[idx].Event));
                     if (eventWaitHandler != null)
                     {
-                        base.Runtime.Log($"<ReceiveLog> Machine '{base.Id}' dequeued " +
-                            $"event '{this.Inbox[idx].EventName}'.");
+                        base.Runtime.Log("<ReceiveLog> Machine '{0}' dequeued event '{1}'.", base.Id, this.Inbox[idx].EventName);
 
                         this.EventWaitHandlers.Clear();
                         this.ReceiveCompletionSource.SetResult(this.Inbox[idx].Event);

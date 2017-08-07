@@ -348,7 +348,7 @@ namespace Microsoft.PSharp
             bool result = this.MachineMap.TryAdd(mid.Value, machine);
             base.Assert(result, $"Machine '{mid}' was already created.");
 
-            base.Log($"<CreateLog> Machine '{mid}' is created.");
+            base.Log("<CreateLog> Machine '{0}' is created.", mid);
 
             return machine;
         }
@@ -367,11 +367,11 @@ namespace Microsoft.PSharp
             {
                 if (sender != null)
                 {
-                    base.Log($"<SendLog> Machine '{sender.Id}' sent event '{e.GetType().FullName}' to a halted machine '{mid}'.");
+                    base.Log("<SendLog> Machine '{0}' sent event '{1}' to a halted machine '{2}'.", sender.Id, e.GetType().FullName, mid);
                 }
                 else
                 {
-                    base.Log($"<SendLog> The event '{e.GetType().FullName}' was sent to a halted machine '{mid}'.");
+                    base.Log("<SendLog> The event '{0}' was sent to a halted machine '{1}'.", e.GetType().FullName, mid);
                 }
 
                 return;
@@ -400,11 +400,11 @@ namespace Microsoft.PSharp
             {
                 if (sender != null)
                 {
-                    base.Log($"<SendLog> Machine '{sender.Id}' sent event '{e.GetType().FullName}' to a halted machine '{mid}'.");
+                    base.Log("<SendLog> Machine '{0}' sent event '{1}' to a halted machine '{2}'.", sender.Id, e.GetType().FullName, mid);
                 }
                 else
                 {
-                    base.Log($"<SendLog> The event '{e.GetType().FullName}' was sent to a halted machine '{mid}'.");
+                    base.Log("<SendLog> The event '{0}' was sent to a halted machine '{1}'.", e.GetType().FullName, mid);
                 }
 
                 return;
@@ -445,11 +445,11 @@ namespace Microsoft.PSharp
 
             if (sender != null)
             {
-                base.Log($"<SendLog> Machine '{sender.Id}' sent event '{eventInfo.EventName}' to '{machine.Id}'.");
+                base.Log("<SendLog> Machine '{0}' sent event '{1}' to '{2}'.", sender.Id, eventInfo.EventName, machine.Id);
             }
             else
             {
-                base.Log($"<SendLog> Event '{eventInfo.EventName}' was sent to '{machine.Id}'.");
+                base.Log("<SendLog> Event '{0}' was sent to '{1}'.", eventInfo.EventName, machine.Id);
             }
 
             machine.Enqueue(eventInfo, ref runNewHandler);
@@ -554,7 +554,7 @@ namespace Microsoft.PSharp
                 this.Monitors.Add(monitor as Monitor);
             }
 
-            base.Log($"<CreateLog> Monitor '{type.Name}' is created.");
+            base.Log("<CreateLog> Monitor '{0}' is created.", type.Name);
 
             (monitor as Monitor).GotoStartState();
         }
@@ -619,12 +619,11 @@ namespace Microsoft.PSharp
 
             if (machine != null)
             {
-                base.Log($"<RandomLog> Machine '{machine.Id}' " +
-                    $"nondeterministically chose '{result}'.");
+                base.Log("<RandomLog> Machine '{0}' nondeterministically chose '{1}'.", machine.Id, result);
             }
             else
             {
-                base.Log($"<RandomLog> Runtime nondeterministically chose '{result}'.");
+                base.Log("<RandomLog> Runtime nondeterministically chose '{0}'.", result);
             }
 
             return result;
@@ -656,12 +655,11 @@ namespace Microsoft.PSharp
 
             if (machine != null)
             {
-                base.Log($"<RandomLog> Machine '{machine.Id}' " +
-                    $"nondeterministically chose '{result}'.");
+                base.Log("<RandomLog> Machine '{0}' nondeterministically chose '{1}'.", machine.Id, result);
             }
             else
             {
-                base.Log($"<RandomLog> Runtime nondeterministically chose '{result}'.");
+                base.Log("<RandomLog> Runtime nondeterministically chose '{0}'.", result);
             }
 
             return result;
@@ -682,7 +680,7 @@ namespace Microsoft.PSharp
                 return;
             }
 
-            base.Log($"<StateLog> Machine '{machine.Id}' enters state '{machine.CurrentStateName}'.");
+            base.Log("<StateLog> Machine '{0}' enters state '{1}'.", machine.Id, machine.CurrentStateName);
         }
 
         /// <summary>
@@ -708,8 +706,7 @@ namespace Microsoft.PSharp
                 liveness = "'cold' ";
             }
 
-            base.Log($"<MonitorLog> Monitor '{monitor.GetType().Name}' " +
-                $"enters {liveness}state '{monitorState}'.");
+            base.Log("<MonitorLog> Monitor '{0}' enters {1}state '{2}'.", monitor.GetType().Name, liveness, monitorState);
         }
 
         /// <summary>
@@ -723,7 +720,7 @@ namespace Microsoft.PSharp
                 return;
             }
 
-            base.Log($"<StateLog> Machine '{machine.Id}' exits state '{machine.CurrentStateName}'.");
+            base.Log("<StateLog> Machine '{0}' exits state '{1}'.", machine.Id, machine.CurrentStateName);
         }
 
         /// <summary>
@@ -751,8 +748,7 @@ namespace Microsoft.PSharp
                 monitorState += "[cold]";
             }
 
-            base.Log($"<MonitorLog> Monitor '{monitor.GetType().Name}' " +
-                $"exits {liveness}state '{monitorState}'.");
+            base.Log("<MonitorLog> Monitor '{0}' exits {1}state '{2}'.", monitor.GetType().Name, liveness, monitorState);
         }
 
         /// <summary>
@@ -768,8 +764,8 @@ namespace Microsoft.PSharp
                 return;
             }
 
-            base.Log($"<ActionLog> Machine '{machine.Id}' invoked action " +
-                $"'{action.Name}' in state '{machine.CurrentStateName}'.");
+            base.Log("<ActionLog> Machine '{0}' invoked action '{1}' in state '{2}'.",
+                machine.Id, action.Name, machine.CurrentStateName);
         }
 
         /// <summary>
@@ -785,8 +781,8 @@ namespace Microsoft.PSharp
                 return;
             }
 
-            base.Log($"<MonitorLog> Monitor '{monitor.GetType().Name}' executed " +
-                $"action '{action.Name}' in state '{monitor.CurrentStateName}'.");
+            base.Log("<MonitorLog> Monitor '{0}' executed action '{1}' in state '{2}'.",
+                monitor.GetType().Name, action.Name, monitor.CurrentStateName);
         }
 
         /// <summary>
@@ -804,7 +800,7 @@ namespace Microsoft.PSharp
                 return;
             }
 
-            base.Log($"<RaiseLog> Machine '{machine.Id}' raised event '{eventInfo.EventName}'.");
+            base.Log("<RaiseLog> Machine '{0}' raised event '{1}'.", machine.Id, eventInfo.EventName);
         }
 
         /// <summary>
@@ -819,7 +815,7 @@ namespace Microsoft.PSharp
                 return;
             }
 
-            base.Log($"<MonitorLog> Monitor '{monitor.GetType().Name}' raised event '{eventInfo.EventName}'.");
+            base.Log("<MonitorLog> Monitor '{0}' raised event '{1}'.", monitor.GetType().Name, eventInfo.EventName);
         }
 
         /// <summary>
@@ -832,7 +828,7 @@ namespace Microsoft.PSharp
             // The machine inherits the operation group id of the dequeued event.
             machine.Info.OperationGroupId = eventInfo.OperationGroupId;
 
-            base.Log($"<DequeueLog> Machine '{machine.Id}' dequeued event '{eventInfo.EventName}'.");
+            base.Log("<DequeueLog> Machine '{0}' dequeued event '{1}'.", machine.Id, eventInfo.EventName);
         }
 
         /// <summary>
@@ -844,7 +840,7 @@ namespace Microsoft.PSharp
         {
             if (eventInfoInInbox == null)
             {
-                base.Log($"<ReceiveLog> Machine '{machine.Id}' is waiting to receive an event.");
+                base.Log("<ReceiveLog> Machine '{0}' is waiting to receive an event.", machine.Id);
                 machine.Info.IsWaitingToReceive = true;
             }
         }
@@ -856,7 +852,7 @@ namespace Microsoft.PSharp
         /// <param name="eventInfo">EventInfo</param>
         internal override void NotifyReceivedEvent(Machine machine, EventInfo eventInfo)
         {
-            base.Log($"<ReceiveLog> Machine '{machine.Id}' received event '{eventInfo.EventName}' and unblocked.");
+            base.Log("<ReceiveLog> Machine '{0}' received event '{1}' and unblocked.", machine.Id, eventInfo.EventName);
 
             lock (machine)
             {
@@ -871,7 +867,7 @@ namespace Microsoft.PSharp
         /// <param name="machine">Machine</param>
         internal override void NotifyHalted(Machine machine)
         {
-            base.Log($"<HaltLog> Machine '{machine.Id}' halted.");
+            base.Log("<HaltLog> Machine '{0}' halted.", machine.Id);
             this.MachineMap.TryRemove(machine.Id.Value, out machine);
         }
 
