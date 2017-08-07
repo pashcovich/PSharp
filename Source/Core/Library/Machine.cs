@@ -301,9 +301,9 @@ namespace Microsoft.PSharp
         protected void Send(MachineId mid, Event e)
         {
             // If the target machine is null, then report an error and exit.
-            this.Assert(mid != null, $"Machine '{base.Id}' is sending to a null machine.");
+            this.Assert(mid != null, "Machine '{0}' is sending to a null machine.", base.Id);
             // If the event is null, then report an error and exit.
-            this.Assert(e != null, $"Machine '{base.Id}' is sending a null event.");
+            this.Assert(e != null, "Machine '{0}' is sending a null event.", base.Id);
             base.Runtime.SendEvent(mid, e, this, null);
         }
 
@@ -315,9 +315,9 @@ namespace Microsoft.PSharp
         protected void RemoteSend(MachineId mid, Event e)
         {
             // If the target machine is null, then report an error and exit.
-            this.Assert(mid != null, $"Machine '{base.Id}' is sending to a null machine.");
+            this.Assert(mid != null, "Machine '{0}' is sending to a null machine.", base.Id);
             // If the event is null, then report an error and exit.
-            this.Assert(e != null, $"Machine '{base.Id}' is sending a null event.");
+            this.Assert(e != null, "Machine '{0}' is sending a null event.", base.Id);
             base.Runtime.SendEventRemotely(mid, e, this, null);
         }
 
@@ -339,7 +339,7 @@ namespace Microsoft.PSharp
         protected void Monitor(Type type, Event e)
         {
             // If the event is null, then report an error and exit.
-            this.Assert(e != null, $"Machine '{base.Id}' is sending a null event.");
+            this.Assert(e != null, "Machine '{0}' is sending a null event.", base.Id);
             base.Runtime.Monitor(type, this, e);
         }
 
@@ -352,9 +352,8 @@ namespace Microsoft.PSharp
         {
             // If the state is not a state of the machine, then report an error and exit.
             this.Assert(StateTypeMap[this.GetType()].Any(val
-                => val.DeclaringType.Equals(s.DeclaringType) &&
-                val.Name.Equals(s.Name)), $"Machine '{base.Id}' " +
-                $"is trying to transition to non-existing state '{s.Name}'.");
+                => val.DeclaringType.Equals(s.DeclaringType) && val.Name.Equals(s.Name)),
+                "Machine '{0}' is trying to transition to non-existing state '{1}'.", base.Id, s.Name);
             this.Raise(new GotoStateEvent(s));
         }
 
@@ -365,7 +364,7 @@ namespace Microsoft.PSharp
         protected void Raise(Event e)
         {
             // If the event is null, then report an error and exit.
-            this.Assert(e != null, $"Machine '{base.Id}' is raising a null event.");
+            this.Assert(e != null, "Machine '{0}' is raising a null event.", base.Id);
             this.RaisedEvent = new EventInfo(e, new EventOriginInfo(
                 base.Id, this.GetType().Name, StateGroup.GetQualifiedStateName(this.CurrentState)));
             base.Runtime.NotifyRaisedEvent(this, this.RaisedEvent, null);
@@ -555,17 +554,17 @@ namespace Microsoft.PSharp
                 if (eventInfo.Event.Assert >= 0)
                 {
                     var eventCount = this.Inbox.Count(val => val.EventType.Equals(eventInfo.EventType));
-                    this.Assert(eventCount <= eventInfo.Event.Assert, "There are more than " +
-                        $"{eventInfo.Event.Assert} instances of '{eventInfo.EventName}' " +
-                        $"in the input queue of machine '{this}'");
+                    this.Assert(eventCount <= eventInfo.Event.Assert,
+                        "There are more than {0} instances of '{1}' in the input queue of machine '{2}'",
+                        eventInfo.Event.Assert, eventInfo.EventName, this);
                 }
 
                 if (eventInfo.Event.Assume >= 0)
                 {
                     var eventCount = this.Inbox.Count(val => val.EventType.Equals(eventInfo.EventType));
-                    this.Assert(eventCount <= eventInfo.Event.Assume, "There are more than " +
-                        $"{eventInfo.Event.Assume} instances of '{eventInfo.EventName}' " +
-                        $"in the input queue of machine '{this}'");
+                    this.Assert(eventCount <= eventInfo.Event.Assume,
+                        "There are more than {0} instances of '{1}' in the input queue of machine '{2}'",
+                        eventInfo.Event.Assume, eventInfo.EventName, this);
                 }
 
                 if (!this.IsRunning && base.Runtime.CheckStartEventHandler(this))
@@ -797,8 +796,8 @@ namespace Microsoft.PSharp
                     }
 
                     // If the event cannot be handled then report an error and exit.
-                    this.Assert(false, $"Machine '{base.Id}' received event " +
-                        $"'{e.GetType().FullName}' that cannot be handled.");
+                    this.Assert(false, "Machine '{0}' received event '{1}' that cannot be handled.",
+                        base.Id, e.GetType().FullName);
                 }
 
                 // Checks if the event is a goto state event.
@@ -1068,7 +1067,7 @@ namespace Microsoft.PSharp
 
             // Watch out for an extra pop.
             this.Assert(this.CurrentState != null,
-                $"Machine '{base.Id}' popped with no matching push.");
+                "Machine '{0}' popped with no matching push.", base.Id);
         }
 
         /// <summary>
@@ -1455,9 +1454,8 @@ namespace Microsoft.PSharp
             }
 
             var initialStates = StateMap[machineType].Where(state => state.IsStart).ToList();
-            this.Assert(initialStates.Count != 0, $"Machine '{base.Id}' must declare a start state.");
-            this.Assert(initialStates.Count == 1, $"Machine '{base.Id}' " +
-                "can not declare more than one start states.");
+            this.Assert(initialStates.Count != 0, "Machine '{0}' must declare a start state.", base.Id);
+            this.Assert(initialStates.Count == 1, "Machine '{0}' can not declare more than one start states.", base.Id);
 
             this.DoStatePush(initialStates.Single());
 
@@ -1519,9 +1517,8 @@ namespace Microsoft.PSharp
                         BindingFlags.NonPublic | BindingFlags.Public |
                         BindingFlags.DeclaredOnly))
                     {
-                        this.Assert(t.IsSubclassOf(typeof(StateGroup)) ||
-                            t.IsSubclassOf(typeof(MachineState)), $"'{t.Name}' " +
-                            $"is neither a group of states nor a state.");
+                        this.Assert(t.IsSubclassOf(typeof(StateGroup)) || t.IsSubclassOf(typeof(MachineState)),
+                            "'{0}' is neither a group of states nor a state.", t.Name);
                         stack.Push(t);
                     }
                 }
@@ -1548,20 +1545,20 @@ namespace Microsoft.PSharp
             }
             while (method == null && machineType != typeof(Machine));
 
-            this.Assert(method != null, "Cannot detect action declaration '{0}' " +
-                "in machine '{1}'.", actionName, this.GetType().Name);
-            this.Assert(method.GetParameters().Length == 0, "Action '{0}' in machine " +
-                "'{1}' must have 0 formal parameters.", method.Name, this.GetType().Name);
+            this.Assert(method != null, "Cannot detect action declaration '{0}' in machine '{1}'.",
+                actionName, this.GetType().Name);
+            this.Assert(method.GetParameters().Length == 0, "Action '{0}' in machine '{1}' must have 0 formal parameters.",
+                method.Name, this.GetType().Name);
 
             if (method.GetCustomAttribute(typeof(AsyncStateMachineAttribute)) != null)
             {
-                this.Assert(method.ReturnType == typeof(Task), "Async action '{0}' in machine " +
-                    "'{1}' must have 'Task' return type.", method.Name, this.GetType().Name);
+                this.Assert(method.ReturnType == typeof(Task), "Async action '{0}' in machine '{1}' must have 'Task' return type.",
+                    method.Name, this.GetType().Name);
             }
             else
             {
-                this.Assert(method.ReturnType == typeof(void), "Action '{0}' in machine " +
-                    "'{1}' must have 'void' return type.", method.Name, this.GetType().Name);
+                this.Assert(method.ReturnType == typeof(void), "Action '{0}' in machine '{1}' must have 'void' return type.",
+                    method.Name, this.GetType().Name);
             }
 
             return method;
@@ -1579,7 +1576,7 @@ namespace Microsoft.PSharp
         internal override HashSet<string> GetAllStates()
         {
             this.Assert(StateMap.ContainsKey(this.GetType()),
-                $"Machine '{base.Id}' hasn't populated its states yet.");
+                "Machine '{0}' hasn't populated its states yet.", base.Id);
 
             var allStates = new HashSet<string>();
             foreach (var state in StateMap[this.GetType()])
@@ -1598,7 +1595,7 @@ namespace Microsoft.PSharp
         internal override HashSet<Tuple<string, string>> GetAllStateEventPairs()
         {
             this.Assert(StateMap.ContainsKey(this.GetType()),
-                $"Machine '{base.Id}' hasn't populated its states yet.");
+                "Machine '{0}' hasn't populated its states yet.", base.Id);
 
             var pairs = new HashSet<Tuple<string, string>>();
             foreach (var state in StateMap[this.GetType()])
@@ -1631,10 +1628,10 @@ namespace Microsoft.PSharp
         /// </summary>
         private void AssertStateValidity()
         {
-            this.Assert(StateTypeMap[this.GetType()].Count > 0, $"Machine '{base.Id}' " +
-                "must have one or more states.");
-            this.Assert(this.StateStack.Peek() != null, $"Machine '{base.Id}' " +
-                "must not have a null current state.");
+            this.Assert(StateTypeMap[this.GetType()].Count > 0,
+                "Machine '{0}' must have one or more states.", base.Id);
+            this.Assert(this.StateStack.Peek() != null,
+                "Machine '{0}' must not have a null current state.", base.Id);
         }
 
         /// <summary>

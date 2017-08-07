@@ -324,8 +324,7 @@ namespace Microsoft.PSharp
         internal override MachineId CreateRemoteMachine(Type type, string friendlyName, string endpoint,
             Event e, Machine creator, Guid? operationGroupId)
         {
-            base.Assert(type.IsSubclassOf(typeof(Machine)),
-                $"Type '{type.Name}' is not a machine.");
+            base.Assert(type.IsSubclassOf(typeof(Machine)), "Type '{0}' is not a machine.", type.Name);
             return base.NetworkProvider.RemoteCreateMachine(type, friendlyName, endpoint, e);
         }
 
@@ -337,7 +336,7 @@ namespace Microsoft.PSharp
         /// <returns>Machine</returns>
         private Machine CreateMachine(Type type, string friendlyName)
         {
-            base.Assert(type.IsSubclassOf(typeof(Machine)), $"Type '{type.Name}' is not a machine.");
+            base.Assert(type.IsSubclassOf(typeof(Machine)), "Type '{0}' is not a machine.", type.Name);
 
             MachineId mid = new MachineId(type, friendlyName, this);
             Machine machine = MachineFactory.Create(type);
@@ -346,7 +345,7 @@ namespace Microsoft.PSharp
             machine.InitializeStateInformation();
 
             bool result = this.MachineMap.TryAdd(mid.Value, machine);
-            base.Assert(result, $"Machine '{mid}' was already created.");
+            base.Assert(result, "Machine '{0}' was already created.", mid);
 
             base.Log("<CreateLog> Machine '{0}' is created.", mid);
 
@@ -540,8 +539,7 @@ namespace Microsoft.PSharp
                 return;
             }
 
-            base.Assert(type.IsSubclassOf(typeof(Monitor)), $"Type '{type.Name}' " +
-                "is not a subclass of Monitor.\n");
+            base.Assert(type.IsSubclassOf(typeof(Monitor)), "Type '{0}' is not a subclass of Monitor.\n", type.Name);
 
             MachineId mid = new MachineId(type, null, this);
             Object monitor = Activator.CreateInstance(type);
